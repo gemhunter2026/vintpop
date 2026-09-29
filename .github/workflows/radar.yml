@@ -1,0 +1,28 @@
+name: VintPop Radar
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: vintpop-radar
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Scan Wallapop and classify new listings
+        env:
+          GOOGLE_VISION_API_KEY: ${{ secrets.GOOGLE_VISION_API_KEY }}
+          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+        run: |
+          test -n "$GOOGLE_VISION_API_KEY" || (echo "Missing GOOGLE_VISION_API_KEY" && exit 1)
+          test -n "$TYPESAFE_API_KEY" || (echo "Missing TYPESAFE_API_KEY" && exit 1)
+          curl --fail-with-body --retry 2 --retry-delay 3 --max-time 170 \
+            -X POST "https://kxknbgenxibrzopjtjtc.supabase.co/functions/v1/vintpop-collector" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt4a25iZ2VueGlicnpvcGp0anRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzODg3MzksImV4cCI6MjEwMTk2NDczOX0.XoalwMPi6jCZzIFL1dnILfCwXEi5ZF2MPPBx2Zc3EJA" \
+            -H "Content-Type: application/json" \
+            --data-binary "$(jq -nc --arg google "$GOOGLE_VISION_API_KEY" --arg jev "$TYPESAFE_API_KEY" '{googleApiKey:$google,typesafeApiKey:$jev}')"
