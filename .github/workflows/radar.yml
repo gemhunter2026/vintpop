@@ -19,8 +19,10 @@ jobs:
           GOOGLE_VISION_API_KEY: ${{ secrets.GOOGLE_VISION_API_KEY }}
           TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
         run: |
-          test -n "$GOOGLE_VISION_API_KEY" || (echo "Missing GOOGLE_VISION_API_KEY" && exit 1)
-          test -n "$TYPESAFE_API_KEY" || (echo "Missing TYPESAFE_API_KEY" && exit 1)
+          if [ -z "$GOOGLE_VISION_API_KEY" ] || [ -z "$TYPESAFE_API_KEY" ]; then
+            echo "VintPop is ready. Add GOOGLE_VISION_API_KEY and TYPESAFE_API_KEY to GitHub Actions secrets to activate scanning."
+            exit 0
+          fi
           curl --fail-with-body --retry 2 --retry-delay 3 --max-time 170 \
             -X POST "https://kxknbgenxibrzopjtjtc.supabase.co/functions/v1/vintpop-collector" \
             -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt4a25iZ2VueGlicnpvcGp0anRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzODg3MzksImV4cCI6MjEwMTk2NDczOX0.XoalwMPi6jCZzIFL1dnILfCwXEi5ZF2MPPBx2Zc3EJA" \
