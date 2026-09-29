@@ -1,5 +1,7 @@
 # VintPop Radar
 
+**Production board:** https://kxknbgenxibrzopjtjtc.supabase.co/functions/v1/vintpop-board
+
 Private MVP that continuously scans recent Wallapop listings under €100, scores seller/text context with TypeSafe Jev, sends only promising candidates to Google Cloud Vision Web Detection, then runs a final Jev decision and saves `HOT / REVIEW / DISCARDED` candidates in Supabase.
 
 ## Automatic pipeline
@@ -13,6 +15,8 @@ Private MVP that continuously scans recent Wallapop listings under €100, score
 7. The mobile-first Next.js board reads the results from Supabase.
 
 ## Only two secrets to add
+
+The production board is already deployed. Scanning stays idle (without failing) until both secrets exist.
 
 In GitHub → **Settings → Secrets and variables → Actions**, add:
 
